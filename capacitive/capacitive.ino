@@ -1,27 +1,55 @@
-// TODO: test alternative: https://github.com/martin2250/ADCTouch/
+//////////////////////////////////////////////////////////////////////////
+// LEDs:
+#include <Adafruit_NeoPixel.h>
+
+#define NEOPIXEL_PIN  4   // <= back  //  front: 3 
+#define NUMPIXELS     258 // <= back  //  front: 130
+
+Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL_PIN, NEO_BGR + NEO_KHZ800);
+
+
+//////////////////////////////////////////////////////////////////////////
+// Capacitive:
+// TODO: test alternative? https://github.com/martin2250/ADCTouch/
 
 int pins[] = {7, 11}; // pins number of the capacitive sensors
 //int pins[] = {6,7,8, 10,11,12}; // pins number of the capacitive sensors
-const int PIN_QTT = sizeof pins / sizeof pins[0]; // compute number of pins
 
+const int PIN_QTT = sizeof pins / sizeof pins[0]; // compute number of pins
 float newValue[PIN_QTT] = {0};
 float oldValue[PIN_QTT] = {0};
 
+float smoothCap(int pin);
+uint8_t readCapacitivePin(int pinToMeasure);
 
+
+//////////////////////////////////////////////////////////////////////////
 void setup() {
   Serial.begin(115200);
+  pixels.begin();
 }
 
 
+//////////////////////////////////////////////////////////////////////////
 void loop() {
   for (int i = 0; i < PIN_QTT; i++) {
     Serial.print( smoothCap(i) );
     Serial.print(" ");
   }
-  Serial.println("0 30 50 60 100");               // TODO get max for automatic calibration
+  Serial.println("0 75 200");               // TODO get max for automatic calibration
+
+  bool touch = (smoothCap(0) > 75) || (smoothCap(1) > 75);
+
+  int amp = touch? 127 : 0;
+
+  for(int i=0; i<NUMPIXELS; i++) {
+    pixels.setPixelColor(i, pixels.Color(amp, amp, amp));
+  }
+  pixels.show();
 }
 
 
+//////////////////////////////////////////////////////////////////////////
 float smoothCap(int pin) {
   const float COEF = 0.6;
 
@@ -42,7 +70,7 @@ float smoothCap(int pin) {
 }
 
 
-
+//////////////////////////////////////////////////////////////////////////
 // readCapacitivePin
 
 //  Input: Arduino pin number (with a 1M pull up)
