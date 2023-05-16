@@ -4,8 +4,8 @@
 #define BUTTON_PIN     3
 
 // NeoPixel
-#define NEOPIXEL_PIN  2    // NOT THE USUAL PIN !!
-#define NUMPIXELS     15
+#define NEOPIXEL_PIN  2    // NOT THE USUAL PIN
+#define NUMPIXELS     300
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXEL_PIN, NEO_BGR + NEO_KHZ800);
 
 
@@ -36,8 +36,6 @@ void loop() {
   pixels.clear(); // Set all pixel colors to 'off'
   for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
     pixels.setPixelColor(i, pixels.Color(R, G, B));
-    pixels.show();   // Send the updated pixel colors to the hardware.
   }
-  
-  delay(10); // Pause before next pass through loop
+  pixels.show();   // Send the updated pixel colors to the hardware.
 }
